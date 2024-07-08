@@ -27,21 +27,26 @@ public class DirectoryInspector : IProducer<string>
             DirectoryInfo dirInfo = new DirectoryInfo(_inspectedDirPath);
             while (!cancellationToken.IsCancellationRequested)
             {
-                foreach(var file in dirInfo.GetFiles())
-                {
-                    if (!_enqueuedFiles.Contains(file.FullName) && IsFileReadable(file.FullName))
-                    {
-                        Console.WriteLine($"Found new file {file.FullName}");
-                        _filePathQueue.Enqueue(file.FullName);
-                        _enqueuedFiles.Add(file.FullName);
-                    }
-                }
+                InspectDirectory(dirInfo);
             }
             _isInspectionStarted = false;
             Console.WriteLine("Inspection task has been cancelled");
         });
         _isInspectionStarted = true;
         Console.WriteLine("Directory inspection has been started");
+    }
+
+    private void InspectDirectory(DirectoryInfo dirInfo)
+    {
+        foreach (var file in dirInfo.GetFiles())
+        {
+            if (!_enqueuedFiles.Contains(file.FullName) && IsFileReadable(file.FullName))
+            {
+                Console.WriteLine($"Found new file {file.FullName}");
+                _filePathQueue.Enqueue(file.FullName);
+                _enqueuedFiles.Add(file.FullName);
+            }
+        }
     }
 
     public bool TryDequeueProducedItem(out string item)
