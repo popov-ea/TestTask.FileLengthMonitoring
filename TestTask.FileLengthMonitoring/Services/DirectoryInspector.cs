@@ -4,27 +4,27 @@ using TestTask.FileLengthMonitoring.Contracts;
 namespace TestTask.FileLengthMonitoring.Services;
 public class DirectoryInspector : IProducer<string>
 {
-    private bool _isMonitoringStarted = false;
-    private readonly string _monitoredDirPath;
+    private bool _isInspectionStarted = false;
+    private readonly string _inspectedDirPath;
     private readonly HashSet<string> _enqueuedFiles = new HashSet<string>();
     private readonly ConcurrentQueue<string> _filePathQueue = new ConcurrentQueue<string>();
-    public DirectoryInspector(string monitoredDirPath)
+    public DirectoryInspector(string inspectedDirPath)
     {
-        _monitoredDirPath = monitoredDirPath ?? throw new ArgumentNullException(nameof(monitoredDirPath));
+        _inspectedDirPath = inspectedDirPath ?? throw new ArgumentNullException(nameof(inspectedDirPath));
     }
 
     public void StartInspecting(CancellationToken cancellationToken)
     {
-        if (!Directory.Exists(_monitoredDirPath))
-            throw new ApplicationException($"Input directory does not exist: {_monitoredDirPath}");
-        if (_isMonitoringStarted)
-            throw new ApplicationException("File monitoring is already started");
+        if (!Directory.Exists(_inspectedDirPath))
+            throw new ApplicationException($"Input directory does not exist: {_inspectedDirPath}");
+        if (_isInspectionStarted)
+            throw new ApplicationException("Directory inspection is already started");
 
-        Console.WriteLine("Starting files monitoring");
+        Console.WriteLine($"Starting inspection of directory: {_inspectedDirPath}");
         Task.Run(() => 
         {
-            Console.WriteLine($"Monitoring thread id: {Thread.CurrentThread.ManagedThreadId}");
-            DirectoryInfo dirInfo = new DirectoryInfo(_monitoredDirPath);
+            Console.WriteLine($"Directory inspection thread id: {Thread.CurrentThread.ManagedThreadId}");
+            DirectoryInfo dirInfo = new DirectoryInfo(_inspectedDirPath);
             while (!cancellationToken.IsCancellationRequested)
             {
                 foreach(var file in dirInfo.GetFiles())
@@ -37,11 +37,11 @@ public class DirectoryInspector : IProducer<string>
                     }
                 }
             }
-            _isMonitoringStarted = false;
-            Console.WriteLine("Monitoring task has been cancelled");
+            _isInspectionStarted = false;
+            Console.WriteLine("Inspection task has been cancelled");
         });
-        _isMonitoringStarted = true;
-        Console.WriteLine("Files monitoring has been started");
+        _isInspectionStarted = true;
+        Console.WriteLine("Directory inspection has been started");
     }
 
     public bool TryDequeueProducedItem(out string item)
