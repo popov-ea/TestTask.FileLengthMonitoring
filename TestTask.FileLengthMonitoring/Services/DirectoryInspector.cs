@@ -4,7 +4,6 @@ using TestTask.FileLengthMonitoring.Contracts;
 namespace TestTask.FileLengthMonitoring.Services;
 public class DirectoryInspector : IProducer<string>
 {
-
     private bool _isMonitoringStarted = false;
     private readonly string _monitoredDirPath;
     private readonly HashSet<string> _enqueuedFiles = new HashSet<string>();
