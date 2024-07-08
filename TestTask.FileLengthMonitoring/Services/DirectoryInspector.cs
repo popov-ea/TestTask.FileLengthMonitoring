@@ -36,8 +36,6 @@ public class DirectoryInspector : IProducer<string>
                         _enqueuedFiles.Add(file.FullName);
                     }
                 }
-
-                dirInfo.Refresh();
             }
             _isMonitoringStarted = false;
             Console.WriteLine("Monitoring task has been cancelled");
