@@ -13,7 +13,7 @@ public class FileLettersCalculator
         _outputDirPath = outputDir;
     }
 
-    public Task[] StartCalculatingProcess(short degreeOfParallelism, CancellationToken cancellationToken)
+    public Task[] StartCalculating(short degreeOfParallelism, CancellationToken cancellationToken)
     {
         if (!Directory.Exists(_outputDirPath))
             Directory.CreateDirectory(_outputDirPath);

@@ -14,7 +14,7 @@ var lettersCalculator = new FileLettersCalculator(dirInspector, parseResult.Valu
 var cancellationTokenSource = new CancellationTokenSource();
 dirInspector.StartInspecting(cancellationTokenSource.Token);
 // one thread for inspecting, 3 threads for processing
-var processingTasks = lettersCalculator.StartCalculatingProcess(3, cancellationTokenSource.Token);
+var processingTasks = lettersCalculator.StartCalculating(3, cancellationTokenSource.Token);
 
 Console.WriteLine("Press any key to stop processing");
 Console.ReadKey();
