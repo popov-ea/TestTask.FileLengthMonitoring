@@ -14,7 +14,7 @@ public class DirectoryInspector : IProducer<string>
         _monitoredDirPath = monitoredDirPath ?? throw new ArgumentNullException(nameof(monitoredDirPath));
     }
 
-    public void StartMonitoring(CancellationToken cancellationToken)
+    public void StartInspecting(CancellationToken cancellationToken)
     {
         if (!Directory.Exists(_monitoredDirPath))
             throw new ApplicationException($"Input directory does not exist: {_monitoredDirPath}");

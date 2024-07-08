@@ -10,10 +10,10 @@ var parseResult = Parser.Default
     });
 
 var dirInspector = new DirectoryInspector(parseResult.Value.InputFilesDirPath);
-var lettersCalculator = new LettersCalculator(dirInspector, parseResult.Value.ResultsDirPath);
+var lettersCalculator = new FileLettersCalculator(dirInspector, parseResult.Value.ResultsDirPath);
 var cancellationTokenSource = new CancellationTokenSource();
-dirInspector.StartMonitoring(cancellationTokenSource.Token);
-// one thread for monitoring, 3 threads for processing
+dirInspector.StartInspecting(cancellationTokenSource.Token);
+// one thread for inspecting, 3 threads for processing
 var processingTasks = lettersCalculator.StartCalculatingProcess(3, cancellationTokenSource.Token);
 
 Console.WriteLine("Press any key to stop processing");

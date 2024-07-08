@@ -2,50 +2,48 @@
 using TestTask.FileLengthMonitoring.Contracts;
 
 namespace TestTask.FileLengthMonitoring.Services;
-public class LettersCalculator
+public class FileLettersCalculator
 {
     private readonly IProducer<string> _filePathProducer;
-    private readonly string _outputDir;
+    private readonly string _outputDirPath;
 
-    public LettersCalculator(IProducer<string> filePathProducer, string outputDir)
+    public FileLettersCalculator(IProducer<string> filePathProducer, string outputDir)
     {
         _filePathProducer = filePathProducer;
-        _outputDir = outputDir;
+        _outputDirPath = outputDir;
     }
 
     public Task[] StartCalculatingProcess(short degreeOfParallelism, CancellationToken cancellationToken)
     {
-        if (!Directory.Exists(_outputDir))
-            Directory.CreateDirectory(_outputDir);
+        if (!Directory.Exists(_outputDirPath))
+            Directory.CreateDirectory(_outputDirPath);
 
-        var tasks = new Task[degreeOfParallelism];
+        var calculationTasks = new Task[degreeOfParallelism];
         for (int i = 0; i < degreeOfParallelism; i++)
         {
-            tasks[i] = Task.Run(() =>
+            calculationTasks[i] = Task.Run(() =>
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    if (!_filePathProducer.TryDequeueProducedItem(out string fileToBeHandled))
+                    if (!_filePathProducer.TryDequeueProducedItem(out string filePathToBeHandled))
                         continue;
 
                     try
                     {
-                        var outputFilePath = Path.Combine(_outputDir, Path.GetFileNameWithoutExtension(fileToBeHandled) + ".txt");
-                        File.WriteAllText(
-                            outputFilePath, 
-                            CalculateLetters(fileToBeHandled).ToString());
+                        var outputFilePath = Path.Combine(_outputDirPath, Path.GetFileNameWithoutExtension(filePathToBeHandled) + ".txt");
+                        File.WriteAllText(outputFilePath, CalculateLetters(filePathToBeHandled).ToString());
                         Console.WriteLine($"File processing result saved in output dir: {outputFilePath}");
                     }
                     catch (IOException e)
                     {
-                        Console.WriteLine($"IOException occurred while trying to process file {fileToBeHandled}. Error message: {e.Message}");
-                        _filePathProducer.OnItemProcessingFailed(fileToBeHandled);
+                        Console.WriteLine($"IOException occurred while trying to process file {filePathToBeHandled}. Error message: {e.Message}");
+                        _filePathProducer.OnItemProcessingFailed(filePathToBeHandled);
                     }
                 }
                 Console.WriteLine("Processing task has been Cancelled");
             });
         }
-        return tasks;
+        return calculationTasks;
     }
 
     private long CalculateLetters(string filePath)
