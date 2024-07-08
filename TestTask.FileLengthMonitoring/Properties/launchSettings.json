@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TestTask.FileLengthMonitoring": {
+      "commandName": "Project",
+      "commandLineArgs": "-i ./input -o ./output"
+    }
+  }
+}
