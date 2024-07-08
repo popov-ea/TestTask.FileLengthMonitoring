@@ -1,11 +1,18 @@
 ﻿using CommandLine;
 using TestTask.FileLengthMonitoring.Models;
 using TestTask.FileLengthMonitoring.Services;
+using TestTask.FileLengthMonitoring.Validators;
 
 var parseResult = Parser.Default
     .ParseArguments<CommandLineOptions>(args)
-    .WithNotParsed(_ =>
+    .WithNotParsed(_ => Environment.Exit(1))
+    .WithParsed(arguments =>
     {
+        var validationErrors = new CommandLineOptionsValidator().GetValidationErrors(arguments);
+        if (!validationErrors.Any())
+            return;
+        foreach (var error in validationErrors)
+            Console.WriteLine(error);
         Environment.Exit(1);
     });
 
